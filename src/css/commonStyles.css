@@ -1,0 +1,22 @@
+.display-web {
+    @media (max-width: 600px) {
+        display: none;
+    }
+}
+
+.display-mobile {
+    @media (max-width: 600px) {
+        
+    }
+
+    @media (min-width: 601px) {
+        display: none;
+    }
+}
+
+.container {
+    max-width: 1300px;
+
+    margin-left: auto;
+    margin-right: auto;
+}
