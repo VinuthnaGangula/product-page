@@ -5,7 +5,7 @@
 			<PopupViewer @closePopupEvent="closePopup()" :media="sortedMedia" :selected_id="media[selectedIndex].id"></PopupViewer>
 		</div>
     
-        <div class="py-4 bg-white">
+        <div class="bg-white">
             <div class="">
                 <!-- Active Media Content -->
                 <div class="relative">
@@ -24,8 +24,8 @@
                     </div>
                     
                     <div class="display-web">
-                        <div class="h-[340px] flex justify-center align-center">
-                            <div v-if="selectedMedium" class="p-4">
+                        <div class="h-[384px] flex justify-center align-center">
+                            <div v-if="selectedMedium" class="p-8">
                                 <div v-if="selectedMedium.type == 'IMAGE'">
                                     <img class="w-[280px] h-[320px] object-contain cursor-pointer point-zoom" @click="openPopupView()" :src="require('../assets/ProductImages/' + selectedMedium.standard_image)" alt="product-image">
                                 </div>
