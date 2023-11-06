@@ -11,26 +11,36 @@
                 <div class="relative">
                     <!-- Prev Button -->
                     <div class="px-2 absolute left-0 top-1/2">
-                        <button :disabled="selectedIndex == 0" @click="updateSelectedMedia(selectedIndex - 1)">
+                        <button @click="updateSelectedMedia(selectedIndex - 1)">
                             Prev
                         </button>
                     </div>
 
                     <!-- Next Button -->
                     <div class="px-2 absolute right-0 top-1/2">
-                        <button :disabled="selectedIndex == (sortedMedia.length - 1)" @click="updateSelectedMedia(selectedIndex + 1)">
+                        <button @click="updateSelectedMedia(selectedIndex + 1)">
                             Next
                         </button>
                     </div>
                     
                     <div class="display-web">
-                        <div class="h-[384px] flex justify-center align-center">
-                            <div v-if="selectedMedium" class="p-8">
-                                <div v-if="selectedMedium.type == 'IMAGE'">
-                                    <img class="w-[280px] h-[320px] object-contain cursor-pointer point-zoom" @click="openPopupView()" :src="require('../assets/ProductImages/' + selectedMedium.standard_image)" alt="product-image">
+                        <div class="flex w-[100vw]">
+                            <div class="">
+                                <div class="h-[384px] flex justify-center align-center">
+                                    <div v-if="selectedMedium" class="p-8">
+                                        <button class="" @click="openPopupView()">
+                                            <div class="relative">
+                                                <img id="original-image" class="h-[320px] object-contain cursor-pointer" :src="require('../assets/ProductImages/' + selectedMedium.standard_image)" alt="product-image">
+
+                                                <div id="hover-selection" class="absolute w-[100px] h-[100px] translate-x-1/2 translate-y-1/2 bg-black">
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div v-else class="w-[280px] h-[320px]">
-                                    video
+
+                                <div v-if="zoomOnHoverFlag" class="zoomed-image-container fixed z-50">
+                                    <img id="zoomed-image" class="zoom-image h-[60vh]" :src="require('../assets/ProductImages/' + selectedMedium.standard_image)" alt="product-image">
                                 </div>
                             </div>
                         </div>
@@ -39,12 +49,16 @@
                     <div class="display-mobile">
                         <div class="h-[340px] flex justify-center align-center">
                             <div v-if="selectedMedium" @touchstart="onTouchStart" @touchend="onTouchStop" @touchmove="onTouchMove">
-                                <div v-if="selectedMedium.type == 'IMAGE'">
+                                <button @click="openPopupView()">
+                                    <img :class="[selectedMedium.type == 'VIDEO' ? 'w-[80vw]' : 'w-[180px]']" class="h-[320px] object-contain cursor-pointer" :src="require('../assets/ProductImages/' + selectedMedium.standard_image)" alt="product-image">
+
+                                </button>
+                                <!-- <div v-if="selectedMedium.type == 'IMAGE'">
                                     <img class="w-[180px] h-[320px] object-contain cursor-pointer" @click="openPopupView()" :src="require('../assets/ProductImages/' + selectedMedium.standard_image)" alt="product-image">
                                 </div>
                                 <div v-else class="w-[180px] h-[320px] object-contain">
                                     video
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -83,6 +97,7 @@ export default {
             isSwiping: false,
             swipeStart: 0,
             swipeEnd: null,
+            zoomOnHoverFlag: false,
         }
     },
     mounted() {
@@ -91,11 +106,13 @@ export default {
         });
 
         this.selectedMedium = this.sortedMedia[0];
+
+        
     },
     methods: {
         updateSelectedMedia(index) {
-            this.selectedIndex = index;
-            this.selectedMedium = this.sortedMedia[index];
+            this.selectedIndex = index >= 0 && index < this.sortedMedia.length ? index : (this.sortedMedia.length + index) % this.sortedMedia.length;
+            this.selectedMedium = this.sortedMedia[this.selectedIndex];
         },
         onTouchStart(event) {
             this.isSwiping = true;
@@ -116,8 +133,11 @@ export default {
                     this.selectedMedium = this.sortedMedia[this.selectedIndex];
                 }
 
+                this.swipeStart = null;
+				this.swipeEnd = null;
                 this.isSwiping = false;
             } else if (this.swipeEnd == null) {
+                this.swipeStart = null;
                 this.isSwiping = false;
             }
         },
@@ -140,7 +160,21 @@ export default {
 <style scoped>
 @import '../css/commonStyles.css';
 
+.zoom-image {
+    left: 0;
+    top: 0;
+}
+
+/* .video-button {
+    background-image: url('../assets/HelperIcons/play-button.png');
+} */
 /* .point-zoom:hover {
     transform: scale(1.5);
+} */
+/* .hover-area:hover {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-color: grey;
 } */
 </style>

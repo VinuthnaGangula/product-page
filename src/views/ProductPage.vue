@@ -129,32 +129,11 @@ export default {
 					id: 4,
 					placement: 4,
 					type: 'VIDEO',
-					thumbnail: 'product-image-thumbnail.jpeg',
-					video_link: 'product-image.jpeg'
+					thumbnail: 'product-video-thumbnail.png',
+					standard_image: 'product-video-image.png',
+					video: 'SampleVideo.mp4'
 				}
-			],
-			// media: {
-			// 	images: {
-			// 		thumbnails: [
-			// 			'product-image-thumbnail.jpeg',
-			// 			'product-image-front-thumbnail.jpeg',
-			// 			'product-image-back-thumbnail.jpeg'
-			// 		],
-			// 		standard_image: [
-			// 			'product-image.jpeg',
-			// 			'product-image-front.jpeg',
-			// 			'product-image-back.jpeg'
-			// 		],
-			// 		zoom_image: [
-			// 			'product-image-large.jpeg',
-			// 			'product-image-front-large.jpeg',
-			// 			'product-image-back-large.jpeg'
-			// 		]
-			// 	},
-			// 	videos: [
-			// 		''
-			// 	]
-			// }
+			]
 		};
 
 		this.productMedia = this.productData.media;
