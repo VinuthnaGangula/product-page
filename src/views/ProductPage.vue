@@ -1,15 +1,17 @@
 <template>
 	<div class="bg-neutral-100">
 		<!-- Header -->
-		<div class="pl-4 md:pl-8 py-4 flex align-center bg-white h-[10vh]" align="left">
-			<img class="" src="../assets/tbps-logo.webp" alt="logo">
+		<div class="mb-2 md:mb-4 lg:mb-8 bg-white">
+			<div class="pl-4 md:pl-8 py-4 flex justify-start align-center w-[40%] md:w-[100%] h-[10vh]">
+				<img class="object-contain" src="../assets/tbps-logo.webp" alt="logo">
+			</div>
 		</div>
 
 		<div v-if="!loadingFlag" class="container md:h-[90vh]">
 			<!-- Product Section -->
 			<div class="py-4 md:py-8 px-4 md:px-8 flex flex-col justify-start md:justify-between align-center md:flex-row">
 				<!-- Product Media Section -->
-				<div class="w-[100%] md:w-[48%] h-[100%] pb-4 md:pb-0">
+				<div class="w-[100%] md:w-[48%] pb-4 md:pb-0">
 					<div>
                         <!-- Popup Viewer Component -->
                         <div v-if="viewPopup">
@@ -21,43 +23,41 @@
                                 <!-- Active Media Content -->
                                 <div class="relative">
                                     <!-- Prev Button -->
-                                    <div class="px-1 absolute z-30 left-0 top-1/2">
-                                        <button class="rounded-full p-1 md:p-0 bg-white md:bg-none" @click="updateSelectedMedia(selectedIndex - 1)">
-                                            <img class="w-[36px] h-[36px]" src="../assets/HelperIcons/previous-icon.png">
+                                    <div class="pr-1 absolute z-30 left-0 top-1/2">
+                                        <button class="rounded-full" @click="updateSelectedMedia(selectedIndex - 1)">
+                                            <img class="w-[24px] md:w-[32px] h-[24px] md:h-[32px]" src="../assets/HelperIcons/previous-icon.svg">
                                         </button>
                                     </div>
 
                                     <!-- Next Button -->
-                                    <div class="px-1 z-30 absolute right-0 top-1/2">
-                                        <button class="rounded-full p-1 md:p-0 bg-white md:bg-none" @click="updateSelectedMedia(selectedIndex + 1)">
-                                            <img class="w-[36px] h-[36px]" src="../assets/HelperIcons/next-icon.png">
+                                    <div class="pl-1 z-30 absolute right-0 top-1/2">
+                                        <button class="rounded-full" @click="updateSelectedMedia(selectedIndex + 1)">
+                                            <img class="w-[24px] md:w-[32px] h-[24px] md:h-[32px]" src="../assets/HelperIcons/next-icon.svg">
                                         </button>
                                     </div>
                                     
                                     <div class="display-web">
                                         <div class="w-[100%]">
-                                            <div class="">
-                                                <div class="h-[384px] flex justify-center align-center">
-                                                    <div class="p-8">
-                                                        <button @click="openPopupView()">
-                                                            <div class="picture relative" id="picture">
-                                                                <div v-if="sortProductMedia[selectedIndex].type != 'VIDEO'" class="absolute w-[100px] h-[100px] border-2 border-black bg-neutral-400 pointer-events-none highlight-class z-50 opacity-0" id="highlight">
-                                                                </div>
+											<div class="h-[384px] flex justify-center align-center">
+												<div class="p-8">
+													<button @click="openPopupView()">
+														<div class="picture relative" id="picture">
+															<div v-if="sortProductMedia[selectedIndex].type != 'VIDEO'" class="absolute w-[100px] h-[100px] border-2 border-black bg-neutral-400 pointer-events-none highlight-class z-50 opacity-0" id="highlight">
+															</div>
 
-                                                                <img class="h-[320px] object-contain cursor-pointer" :src="require('../assets/ProductImages/' + sortProductMedia[selectedIndex].standard_image)" alt="product-image">
-                                                            </div>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
+															<img class="h-[320px] object-contain cursor-pointer" :src="require('../assets/ProductImages/' + sortProductMedia[selectedIndex].standard_image)" alt="product-image">
+														</div>
+													</button>
+												</div>
+											</div>
                                         </div>
                                     </div>
 
                                     <div class="display-mobile">
-                                        <div class="h-[340px] flex justify-center align-center">
-                                            <div @touchstart="onTouchStart" @touchend="onTouchStop" @touchmove="onTouchMove">
-                                                <button @click="openPopupView()">
-                                                    <img :class="sortProductMedia[selectedIndex].type == 'VIDEO' ? 'w-[80vw]' : 'w-[180px]'" class="h-[320px] object-contain cursor-pointer" :src="require('../assets/ProductImages/' + sortProductMedia[selectedIndex].standard_image)" alt="product-image">
+                                        <div class="pt-4 h-[220px] flex justify-center align-center">
+                                            <div class="flex justify-center align-center" @touchstart="onTouchStart" @touchend="onTouchStop" @touchmove="onTouchMove">
+                                                <button class="flex justify-center align-center items-center" @click="openPopupView()">
+                                                    <img :class="sortProductMedia[selectedIndex].type == 'VIDEO' ? 'w-[80%]' : 'h-[180px]'" class="flex justify-center align-center object-contain cursor-pointer" :src="require('../assets/ProductImages/' + sortProductMedia[selectedIndex].standard_image)" alt="product-image">
                                                 </button>
                                             </div>
                                         </div>
@@ -66,9 +66,9 @@
 
                                 <!-- Thumbnails -->
                                 <div class="p-4 flex gap-2 md:gap-4 justify-center md:justify-start align-center">
-                                    <div class="w-[60px] h-[80px]" v-for="medium, index in sortProductMedia" :key="index" @click="updateSelectedMedia(index)">
-                                        <img v-if="medium.type == 'IMAGE'" class="rounded p-2 object-contain cursor-pointer" :class="[selectedIndex == index ? 'border-2 border-indigo-500' : '']" :src="require('../assets/ProductImages/' + medium.thumbnail)" alt="thumbnail">
-                                        <img v-else class="rounded p-2 object-contain cursor-pointer" :class="[selectedIndex == index ? 'border-2 border-indigo-500' : '']" :src="require('../assets/HelperIcons/video-icon.png')" alt="thumbnail">
+                                    <div :class="[selectedIndex == index ? 'border-2 border-indigo-500' : '']" class="w-[36px] md:w-[70px] h-[44px] md:h-[80px] rounded p-1 md:p-2 flex justify-center align-center" v-for="medium, index in sortProductMedia" :key="index" @click="updateSelectedMedia(index)">
+                                        <img v-if="medium.type == 'IMAGE'" class="object-contain cursor-pointer" :src="require('../assets/ProductImages/' + medium.thumbnail)" alt="thumbnail">
+                                        <img v-else class="object-contain cursor-pointer" :src="require('../assets/HelperIcons/video-icon.png')" alt="thumbnail">
 									</div>
                                 </div>
                             </div>
@@ -78,24 +78,24 @@
 
 				<!-- Product Info Section -->
 				<div class="relative flex flex-col md:w-[48%] bg-neutral-100">
-                    <div v-if="sortProductMedia[selectedIndex].type != 'VIDEO'" id="zoom" class="border-2 border-black zoomed-image absolute w-[500px] h-[500px] pointer-events-none z-100 opacity-0">
+                    <div v-if="sortProductMedia[selectedIndex].type != 'VIDEO'" id="zoom" class="hidden lg:block w-[100vw] border-2 border-black zoomed-image absolute w-[500px] h-[500px] pointer-events-none z-100 opacity-0">
                     </div>
 
 					<div class="">
 						<!-- Brand & Stock -->
 						<div class="pb-2 pt-2 sm:pt-0 flex flex-wrap justify-between">
 							<div>
-								<p align="left" class="m-0 text-gray-400">{{ productData.brand_name }}</p>
+								<p align="left" class="m-0 font-sans text-sm md:text-lg text-gray-400">{{ productData.brand_name }}</p>
 							</div>
 
 							<div>
-								<p align="left" class="m-0 font-normal text-teal-600">{{ productData.stock_info }}</p>
+								<p align="left" class="m-0 font-sans text-sm lg:text-md font-normal text-teal-600">{{ productData.stock_info }}</p>
 							</div>
 						</div>
 
-						<p align="left" class="m-0 py-2 text-xl font-semibold">{{ productData.product_name }}</p>
+						<p align="left" class="m-0 font-sans py-1 md:py-2 text-base md:text-xl text-black font-semibold">{{ productData.product_name }}</p>
 
-						<p align="left" class="m-0 py-2 text-lg font-semibold">{{ productData.price }}</p>
+						<p align="left" class="m-0 font-sans py-1 md:py-2 text-base md:text-xl text-black font-semibold">{{ productData.price }}</p>
 
 						<!-- Line -->
 						<div class="py-2">
@@ -104,7 +104,7 @@
 
 						<!-- Properties -->
 						<div v-for="property, index in productData.properties" :key="index">
-							<p align="left" class="m-0 py-2"><span class="font-medium">{{ property.name }}</span>: <span class="">{{ property.value }}</span></p>
+							<p align="left" class="m-0 font-sans py-1 md:py-2 text-sm md:text-md"><span class="font-medium text-black">{{ property.name }}</span>: <span class="">{{ property.value }}</span></p>
 						</div>
 
 						<!-- Line -->
@@ -113,28 +113,28 @@
 						</div>
 
 						<!-- Product Quantity -->
-						<div class="py-2 flex justify-center md:justify-start align-center">
-							<button class="pr-2" @click="updateQuantity(-1)">
+						<div class="pt-2 flex justify-center md:justify-start align-center">
+							<button :disabled="disableButton" class="pr-2" @click="updateQuantity(-1)">
 								<span class="text-xl text-color-slate-600">
-									<img class="w-[28px] h-[28px]" src="../assets/HelperIcons/remove-icon.png">
+									<img class="w-[20px] h-[20px]" src="../assets/HelperIcons/remove-icon.png">
 								</span>
 							</button>
 
-							<div class="bg-slate-200">
-								<p align="left" class="px-4 py-2 w-[50px] text-slate-600 text-xl font-semibold flex justify-center align-center">{{ productData.quantity_added == 0 ? productQuantity : productData.quantity_added }}</p>
+							<div class="mx-2 bg-slate-200">
+								<p align="left" class="m-0 font-sans px-4 py-2 w-[50px] text-slate-600 text-md md:text-xl font-semibold flex justify-center align-center">{{ productData.quantity_added == 0 ? productQuantity : productData.quantity_added }}</p>
 							</div>
 
 							<button class="pl-2" @click="updateQuantity(1)">
 								<span class="text-xl text-color-slate-600">
-									<img class="w-[28px] h-[28px]" src="../assets/HelperIcons/add-icon.png">
+									<img class="w-[20px] h-[20px]" src="../assets/HelperIcons/add-icon.png">
 								</span>
 							</button>
 						</div>
 
 						<!-- Add to Basket -->
-						<div class="py-2 w-full">
+						<div class="pt-4 w-full">
 							<button class="px-4 py-2 w-[100%] bg-yellow-300 rounded">
-								<span class="font-bold">Add to Basket</span>
+								<span class="font-semibold text-md md:text-xl">Add to Basket</span>
 							</button>
 						</div>
 					</div>
@@ -148,7 +148,6 @@
 export default {
 	name: 'ProductPage',
 	components: {
-		'ProductMedia': () => import('../components/temp.vue'),
         'PopupViewer': () => import('../components/PopupComponent.vue'),
 	},
 	data() {
@@ -165,7 +164,8 @@ export default {
             swipeEnd: null,
             zoomOnHoverFlag: false,
             loadingFlag: true,
-            imageKey: 0
+            imageKey: 0,
+			disableButton: true
 		}
 	},
 	mounted() {
@@ -236,19 +236,15 @@ export default {
         let delay = setInterval(() => {
             if (this.sortProductMedia[this.selectedIndex].type != 'VIDEO') {
                 let mainContainer = document.querySelector('#picture');
-                // console.log('mainContainer: ', mainContainer);
 
                 let rect = document.querySelector("#highlight");
-                // console.log('rect: ', rect);
 
                 let zoom = document.querySelector("#zoom");
-                // console.log('zoom: ', zoom);
 
                 let imagePath = require('../assets/ProductImages/' + this.selectedMedium.standard_image);
                 zoom.style['background-image'] = `url(${imagePath})`;
 
                 let originalImageBounds = mainContainer.getBoundingClientRect();
-                // console.log('originalImageBounds: ', originalImageBounds);
 
                 zoom.style.backgroundSize = originalImageBounds.width * 5 + 'px ' + originalImageBounds.height * 5 + 'px';
 
@@ -261,31 +257,34 @@ export default {
 
                     zoom.style.backgroundPosition = '-' + highlightX * 5 + 'px ' + '-' + highlightY * 5 + 'px';
 
-                    // rect.classList.add('highlight-active-class'); 
-                    // zoom.classList.add('highlight-active-class');
 					rect.style.opacity = 0.5;
                     zoom.style.opacity = 1;
                 });
 
                 mainContainer.addEventListener('mouseout', function() {
-                    // rect.classList.remove('highlight-active-class');
 					rect.style.opacity = 0;
                     zoom.style.opacity = 0;
                 });    
             }
             
             clearInterval(delay);
-        }, 1000);
+        }, 1500);
     },
 	methods: {
 		updateQuantity(incrementFactor) {
 			this.productQuantity += incrementFactor;
+			if (this.productQuantity == 0) {
+				this.disableButton = true;
+				this.productQuantity -= incrementFactor;
+			} else {
+				this.disableButton = false;
+			}
 		},
         updateSelectedMedia(index) {
             this.selectedIndex = index >= 0 && index < this.sortProductMedia.length ? index : (this.sortProductMedia.length + index) % this.sortProductMedia.length;
             this.selectedMedium = this.sortProductMedia[this.selectedIndex];
 
-            if (this.selectedMedium.type != 'VIDEO') {
+            if (window.innerWidth > 768 && this.selectedMedium.type != 'VIDEO') {
                 let zoom = document.querySelector("#zoom");
                 let imagePath = require('../assets/ProductImages/' + this.selectedMedium.standard_image);
                 zoom.style['background-image'] = `url(${imagePath})`;
@@ -327,7 +326,6 @@ export default {
         },
         closePopup() {
             this.viewPopup = false;
-            this.$router.go();
         }
 	}
 }
