@@ -15,7 +15,7 @@
 					<div>
                         <!-- Popup Viewer Component -->
                         <div v-if="viewPopup">
-                            <PopupViewer @closePopupEvent="closePopup()" :media="sortProductMedia" :selected_id="sortProductMedia[selectedIndex].id"></PopupViewer>
+                            <PopupViewer @closePopupEvent="closePopup()" :product_data="popUpViewerData" :selected_id="sortProductMedia[selectedIndex].id"></PopupViewer>
                         </div>
 
                         <div class="bg-white">
@@ -56,7 +56,7 @@
                                     <div class="display-mobile">
                                         <div class="pt-4 h-[220px] flex justify-center align-center">
                                             <div class="flex justify-center align-center" @touchstart="onTouchStart" @touchend="onTouchStop" @touchmove="onTouchMove">
-                                                <button class="flex justify-center align-center items-center" @click="openPopupView()">
+                                                <button class="flex justify-center align-center items-center transition ease-linear duration-75" @click="openPopupView()">
                                                     <img :class="sortProductMedia[selectedIndex].type == 'VIDEO' ? 'w-[80%]' : 'h-[180px]'" class="flex justify-center align-center object-contain cursor-pointer" :src="require('../assets/ProductImages/' + sortProductMedia[selectedIndex].standard_image)" alt="product-image">
                                                 </button>
                                             </div>
@@ -148,14 +148,14 @@
 export default {
 	name: 'ProductPage',
 	components: {
-        'PopupViewer': () => import('../components/PopupComponent.vue'),
+        'PopupViewer': () => import('../components/dummyPopupComponent.vue'),
 	},
 	data() {
 		return {
 			productData: {},
-			productMedia: {},
 			productQuantity: 1,
 			sortProductMedia: [],
+            popUpViewerData: {},
             viewPopup: false,
             selectedIndex: 0,
             selectedMedium: null,
@@ -173,6 +173,7 @@ export default {
 		this.productData = {
 			brand_name: 'SAMSUNG',
 			product_name: 'Samsung Galaxy S23 Plus 5G',
+            product_title: 'SAMSUNG Galaxy S23 Plus 5G, Dual Sim, 512GB Storage, 8GB RAM',
 			stock_info: 'Hurry Limited Stock',
 			price: '£880.00',
 			quantity_added: 0,
@@ -219,14 +220,19 @@ export default {
 			]
 		};
 
-		this.productMedia = this.productData.media;
-
 		// Product Quantity check.
 		this.productQuantity = this.productData.quantity_added == 0 ? 1 : this.productData.quantity_added;
 
 		this.sortProductMedia = this.productData.media.sort((medium1, medium2) => {
             return medium1.placement - medium2.placement
         });
+
+        this.popUpViewerData = {
+            product_title: this.productData.product_title,
+            colour: (this.productData.properties.filter((property) => property.name == 'Colour'))[0].value,
+            media: this.sortProductMedia
+        };
+        console.log('this.popUpViewerData: ', this.popUpViewerData);
 
         this.selectedMedium = this.sortProductMedia[0];
 

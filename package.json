@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "npx tailwindcss -i ./src/css/tailwindInput.css -o ./dist/tailwindOutput.css && vue-cli-service serve",
+    "tailwind": "npx tailwindcss -i ./src/css/tailwindInput.css -o ./dist/tailwindOutput.css --watch",
     "build": "vue-cli-service build"
   },
   "dependencies": {
