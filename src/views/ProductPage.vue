@@ -148,7 +148,7 @@
 export default {
 	name: 'ProductPage',
 	components: {
-        'PopupViewer': () => import('../components/dummyPopupComponent.vue'),
+        'PopupViewer': () => import('../components/PopupComponent.vue'),
 	},
 	data() {
 		return {
