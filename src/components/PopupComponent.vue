@@ -24,8 +24,8 @@
                             </div>
         
                             <!-- Content -->
-                            <div class="h-4/5">
-                                <div class="pr-2 w-2/3 h-full float-left self-center">
+                            <div class="h-4/5 overflow-hidden">
+                                <div class="pr-2 w-2/3 h-full float-left self-center overflow-hidden">
                                     <div v-if="activeTab == 'VIDEOS'" class="h-full">
                                         <!-- Display Content -->
                                         <div v-if="videos.length > 0" class="h-full flex justify-center align-center">
@@ -38,10 +38,19 @@
             
                                     <div v-else class="h-full flex justify-center align-center">
                                         <!-- Display Content -->
-                                            <div id="active-image-web-container" class="block" :class="[zoomInFlagWeb ? 'cursor-zoom-out' : 'cursor-zoom-in']" @click="(event) => toggleZoomInWeb(event)">
-                                                <img id="active-image-web" class="relative"
-                                                :class="[zoomInFlagWeb ? 'scale-200 top-0 left-0 h-full overflow-hidden' : 'h-full top-0 left-1/2 -translate-x-1/2 scale-100 object-contain']" :src="require('../assets/ProductImages/' + images[activeTabIndex].standard_image)" alt="product-image">
-                                            </div>
+                                        <div id="active-image-web-container" :key="activeImageWebKey" class="relative" :class="[zoomInFlagWeb ? 'cursor-zoom-out' : 'cursor-zoom-in']" @click="(event) => zoomImageWeb(event)">
+                                            <img id="active-image-web" class=""
+                                            :class="[zoomInFlagWeb ? 'h-full overflow-hidden transition ease duration-750' : 'h-full mx-auto origin-center object-contain']" :src="require('../assets/ProductImages/' + images[activeTabIndex].standard_image)" alt="product-image">
+                                        </div>
+
+                                        <!-- <div :id="'image-container' + index" class="imageContainer z-100">
+                                            <img :id="'image-tag' + index"
+                                                :class="[zoomInFlagMobile ? 'scale-200 z-100 h-full' : 'scale-100 object-contain max-h-[60vh]']"
+                                                
+                                                :src="require('../assets/ProductImages/' + medium.standard_image)"
+                                                alt="product-image"
+                                            >
+                                        </div> -->
                                     </div>
                                 </div>
 
@@ -53,23 +62,16 @@
                                     </div>
 
                                     <!-- Thumbnails -->
-                                    <div v-if="activeTab == 'VIDEOS' && videos.length > 0" class="py-4 flex gap-2 md:gap-4 justify-center md:justify-start align-center">
+                                    <div v-if="activeTab == 'VIDEOS' && videos.length > 0" class="py-4 flex flex-wrap gap-2 md:gap-4 justify-center md:justify-start align-center">
                                         <div class="w-[80px] h-[60px] flex justify-center align-center rounded px-2" :class="[activeTabIndex == index ? 'border-2 border-indigo-500' : '']" v-for="video, index in videos" :key="index" @click="updateSelectedMediaWeb(index)">
                                             <img class="object-contain cursor-pointer" :src="require('../assets/ProductImages/' + video.thumbnail)" alt="thumbnail">
                                         </div>
                                     </div>
-                                    <div v-if="activeTab == 'IMAGES' && images.length > 0" class="py-4 flex gap-2 md:gap-4 justify-center md:justify-start align-center">
+                                    <div v-if="activeTab == 'IMAGES' && images.length > 0" class="py-4 flex flex-wrap gap-2 md:gap-4 justify-center md:justify-start align-center">
                                         <div class="" v-for="image, index in images" :key="index" @click="updateSelectedMediaWeb(index)">
                                             <img class="rounded p-2 w-[80px] h-[100px] object-contain cursor-pointer" :class="[activeTabIndex == index ? 'border-2 border-indigo-500' : '']" :src="require('../assets/ProductImages/' + image.thumbnail)" alt="thumbnail">
                                         </div>
                                     </div>
-
-                                    <!-- Zoom -->
-                                    <!-- <div v-if="zoomInFlagMobile" class="p-4 bg-gray-400/75 rounded-lg cursor-pointer fixed inset-0 flex items-center justify-center z-50">
-                                        <button @dblclick="zoomInFlagMobile = !zoomInFlagMobile" class="p-4 bg-white rounded flex justify-center align-center">
-                                            <img class="max-w-[80vw] max-h-[80vh] object-contain p-4" :src="require('../assets/ProductImages/' + images[activeTabIndex].zoom_image)" alt="product-zoom-image">
-                                        </button>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -80,47 +82,35 @@
 			<div class="bg-white rounded-lg h-full">
 				<div v-if="!loadingFlag" class="display-mobile h-full">
 					<!-- Back button -->
-					<div align="left" class="p-2">
+					<div align="left" class="p-2 sticky top-0">
 						<button class="px-4 py-1 rounded border-2 border-gray-300" @click="closePopup()">
 							<span class="text-sm font-semibold text-gray-600">Back</span>
 						</button>
 					</div>
-
-                    <!-- <div class="z-100 w-[100%] h-[100%] hidden object-cover transition ease bg-no-repeat" id="zoom-container" @dblclick="zoomImage()" @touchstart="onTouchStart" @touchend="onTouchStop" @touchmove="onTouchMove">
-                        <img class="aspect-[3/5] object-contain cursor-pointer" :src="require('../assets/ProductImages/' + medium.standard_image)" alt="product-image">
-                    </div> -->
 	
 					<!-- Content -->
 					<div class="py-2 relative">
                         <!-- Display Content -->
                         <div class="" @touchstart="onTouchStart" @touchend="onTouchStop" @touchmove="onTouchMove">
                             <!-- All elements -->
-                            <ul class="flex h-[90vh] list-none" :style="imageWidth">
-                                <li class="w-[100%] flex justify-center align-center transition-transform ease-linear duration-75" :style="currentImagePosition" v-for="medium, index in product_data.media" :key="index">
-                                    <div class=" flex align-center">
+                            <ul class="flex h-[80vh] overflow-hidden list-none" :style="imageWidth">
+                                <li class="w-[100%] flex justify-center align-center transition ease-linear duration-500" :style="currentImagePosition" v-for="medium, index in product_data.media" :key="index">
+                                    <div class="my-auto flex align-center">
                                         <div v-if="medium.type == 'VIDEO'" class="flex align-center">
                                             <video class="aspect-[16/9] max-h-[450px]" controls autoplay muted>
                                                 <source :src="require('../assets/ProductVideos/' + medium.video)" type="video/mp4">
                                                 Your browser does not support the video tag.
                                             </video>
                                         </div>
-                                        <div v-else class=" flex justify-center align-center">
-                                            <div class="" @dblclick="(event) => zoomImage(event)">
-                                                <!-- <div class=" relative" :class="[zoomInFlagMobile ? 'w-[200%]' : '']">
-                                                    <img id="image-tag" :class="[zoomInFlagMobile ? 'scale-200' : '']" class="absolute left-0 top-0 aspect-[3/5] object-contain cursor-pointer" :src="require('../assets/ProductImages/' + medium.standard_image)" alt="product-image">
-                                                </div> -->
-
-                                                <div id="image-container" class="imageContainer z-100">
-                                                    <!-- <img id="image-tag" :class="[screenWidth < 350 ? 'h-[280px]' : '']" class="max-h-[450px] object-cover cursor-pointer" :src="require('../assets/ProductImages/' + medium.standard_image)" alt="product-image"> -->
-                                                    <img id="image-tag"
-                                                        :class="[zoomInFlagMobile ? 'scale-200 h-full overflow-clip' : 'scale-100']"
-                                                        
-                                                        class=" cursor-pointer"
+                                        <div v-else class="my-auto">
+                                            <div class="my-auto" @dblclick="(event) => zoomImage(event)">
+                                                <div :key="activeImageMobileKey" :id="'image-container' + index" class="imageContainer">
+                                                    <img :id="'image-tag' + index"
+                                                        class="transition-translate duration-500"
+                                                        :class="[zoomInFlagMobile ? 'scale-200 z-100 h-full' : 'scale-100 object-contain max-h-[60vh]']"
                                                         :src="require('../assets/ProductImages/' + medium.standard_image)"
                                                         alt="product-image"
                                                     >
-                                                    <!-- :class="[screenWidth < 350 ? 'h-[280px]' : 'max-h-[450px]']" -->
-                                                    <!-- <img id="zoom-tag" v-else :class="[screenWidth < 350 ? 'h-[280px]' : '']" class="max-h-[450px] object-cover cursor-pointer" :src="require('../assets/ProductImages/' + medium.standard_image)" alt="product-image"> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -130,7 +120,7 @@
                         </div>
 
                         <!-- Thumbnails -->
-                        <div class="absolute bottom-0">
+                        <div class="mt-4 sticky bottom-0">
                             <div class="p-4 flex gap-2 justify-center align-center">
                                 <div class="rounded p-1 flex align-center"
                                     :class="[activeIndex == index ? 'border-2 border-indigo-500' : '']"
@@ -144,17 +134,9 @@
                             </div>
                         </div>
 					</div>
-                    
-                    <!-- <div v-if="zoomInFlagMobile" id="zoom-container" @dblclick="(event) => zoomImage(event)" class="p-4 bg-gray-400/75 rounded-lg cursor-pointer fixed inset-0 flex items-center justify-center z-50">
-                        <button class="p-4 bg-white rounded flex justify-center align-center">
-                            <img class="max-w-[60vw] max-h-[60vh] object-contain p-4" :src="require('../assets/ProductImages/' + product_data.media[activeIndex].zoom_image)" alt="product-zoom-image">
-                        </button>
-                    </div> -->
 				</div>
 			</div>
 		</div>
-
-
 	</div>
 </template>
 
@@ -189,8 +171,9 @@ export default {
 			zoomInFlagMobile: false,
             currentImagePosition: null,
             activeImageBounds: null,
-            previousZoomX: null,
-            previousZoomY: null
+            activeImageBoundsWeb: null,
+            activeImageWebKey: 0,
+            activeImageMobileKey: 0
 		}
 	},
     computed: {
@@ -200,7 +183,33 @@ export default {
     },
     watch: {
         activeIndex() {
+            if (this.zoomInFlagMobile) {
+                this.zoomInFlagMobile = false;
+                this.activeImageMobileKey++;
+            }
             this.currentImagePosition = { transform: 'translateX(-' + this.activeIndex * 100 + '%)' };
+            if (this.product_data.media[this.activeIndex].type == 'IMAGE') {
+                let delay = setInterval(() => {
+                    this.activeImageBounds = document.getElementById('image-tag' + this.activeIndex).getBoundingClientRect();
+                    console.log('this.activeImageBounds: ', this.activeImageBounds);
+    
+                    clearInterval(delay);
+                }, 200);
+            }
+        },
+        activeTabIndex() {
+            if (this.zoomInFlagWeb) {
+                this.zoomInFlagWeb = false;
+                this.activeImageWebKey++;
+            }
+            if (this.activeTab == 'IMAGES') {
+                let delay = setInterval(() => {
+                    this.activeImageBoundsWeb = document.getElementById('active-image-web-container').getBoundingClientRect();
+                    console.log('this.activeImageBoundsWeb: ', this.activeImageBoundsWeb);
+    
+                    clearInterval(delay);
+                }, 200);
+            }
         },
         zoomInFlagMobile() {
             
@@ -221,12 +230,7 @@ export default {
         this.loadingFlag = false;
 	},
     updated() {
-        let delay = setInterval(() => {
-            this.activeImageBounds = document.getElementById('image-tag').getBoundingClientRect();
-            console.log('this.activeImageBounds: ', this.activeImageBounds);
-
-            clearInterval(delay);
-        }, 1000);
+        
     },
 	methods: {
 		activateTab(tab) {
@@ -255,33 +259,24 @@ export default {
                 if (!this.zoomInFlagMobile) {
                     if (swipeLengthX > 50) {
                         // Left Swipe
-                        // let activeTabLength = (this.activeTab == 'VIDEOS' ? this.videos.length : this.images.length);
                         this.activeIndex = (this.activeIndex + 1) % this.product_data.media.length;
                     } else if (swipeLengthX < -50) {
                         // Right Swipe
-                        // let activeTabLength = (this.activeTab == 'VIDEOS' ? this.videos.length : this.images.length);
                         this.activeIndex = (this.product_data.media.length + this.activeIndex - 1) % this.product_data.media.length;
                     }
                 } else {
-                    // this.previousZoomX = 
-                    // this.displayZoomImage(this.swipeEndX, this.swipeEndY);
-                    let imageContainer = document.getElementById('image-tag');
+                    console.log('this.isSwiping blep: ', this.isSwiping);
+                    let imageContainer = document.getElementById('image-container' + this.activeIndex);
 
-                    // let zoomContainer = document.getElementById('zoom-container');
-                    // let backgroundPosition = window.getComputedStyle(zoomContainer).getPropertyValue('background-position').split(' ');
-
-                    // let offsetX = (parseInt(backgroundPosition[0].split('px')[0]) + swipeLengthX);
-                    // let offsetY = parseInt(backgroundPosition[1].split('px')[0]) + swipeLengthY;
-                    // console.log('offsets: ', offsetX, offsetY);
-
-                    // let positionX = offsetX < (-1 * this.activeImageBounds.width / 2) ? 0 : (offsetX >= 0 ? (-1 * (this.activeImageBounds.width / 2)) : offsetX);
-                    // let positionY = offsetY < (-1 * this.activeImageBounds.height / 2) ? 0 : (offsetY >= 0 ? (-1 * (this.activeImageBounds.height / 2)) : offsetY);
-
-                    // zoomContainer.style.backgroundPosition = positionX + 'px ' + positionY + 'px';
-                    // console.log('zoomContainer.style.backgroundPosition: ', zoomContainer.style.backgroundPosition);
-
-                    // imageContainer.classList.add('hidden');
-                    // zoomContainer.classList.remove('hidden');
+                    let imageTag = document.getElementById('image-tag' + this.activeIndex);
+                    let imageBounds = imageTag.getBoundingClientRect();
+                    console.log('imageBounds: ', imageBounds);
+                    
+                    let translateX = (imageBounds.left - swipeLengthX <= 0) ? ((imageBounds.left - swipeLengthX >= (-1 * imageBounds.width / 2)) ? imageBounds.left - swipeLengthX : (-1 * imageBounds.width / 2)) : 0;
+                    let translateY = (imageBounds.top - swipeLengthY <= 0) ? ((imageBounds.top - swipeLengthY >= (-1 * imageBounds.height / 2)) ? imageBounds.top - swipeLengthY : (-1 * imageBounds.height / 2)) : 0;
+                    
+                    console.log('s: ', translateX, translateY);
+                    imageTag.style.transform = 'translate(' + translateX + 'px, ' + translateY + 'px)';
                 }
 
 				this.swipeStartX = null;
@@ -297,73 +292,153 @@ export default {
             this.swipeEndX = event.touches[0].clientX;
             this.swipeEndY = event.touches[0].clientY;
         },
-		zoomImage(event) {
+		// zoomImage(event) {
+		// 	console.log('this.isSwiping: ', this.isSwiping);
+		// 	if (!this.isSwiping) {
+		// 		this.zoomInFlagMobile = !this.zoomInFlagMobile;
+
+        //         if (this.zoomInFlagMobile) {
+        //             console.log('event: ', event);
+        //             let imageContainer = document.getElementById('image-container' + this.activeIndex);
+        //             let imageTag = document.getElementById('image-tag' + this.activeIndex);
+
+                    
+        //             imageContainer.style.width = this.activeImageBounds.width * 2 + 'px';
+        //             imageContainer.style.height = this.activeImageBounds.height * 2 + 'px';
+                    
+        //             let imageContainerBounds = imageContainer.getBoundingClientRect();
+
+        //             let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
+        //             console.log('offsetX: ', offsetX);
+
+        //             imageContainer.style.transform = 'translate(' + -1 * imageContainerBounds.left + 'px, ' + -1 * imageContainerBounds.top + 'px' + ')';
+
+        //             imageContainerBounds = imageContainer.getBoundingClientRect();
+        //             console.log('imagecontbound: ', imageContainerBounds);
+                    
+        //             let leftOffset = (window.innerWidth - this.activeImageBounds.width) / 2;
+        //             let topOffset = (window.innerHeight - this.activeImageBounds.height) / 2;
+
+        //             let highlightX = (2 * (event.offsetX - leftOffset) < this.activeImageBounds.width / 2 ? 0 : ((2 * this.activeImageBounds.width - (2 * (event.offsetX - leftOffset)) < (this.activeImageBounds.width / 2)) ? ((window.innerWidth - 2 * (event.offsetX - leftOffset) > 0) ? 0 : this.activeImageBounds.width) : (2 * (event.offsetX - leftOffset) - this.activeImageBounds.width / 2)));
+
+        //             let highlightY = (2 * (event.offsetY - topOffset) < this.activeImageBounds.height / 2 ? 0 : ((2 * this.activeImageBounds.height - (2 * (event.offsetY - topOffset)) < (this.activeImageBounds.height / 2)) ? ((window.innerHeight - 2 * (event.offsetY - topOffset) > 0) ? 0 : this.activeImageBounds.height) : (2 * (event.offsetY - topOffset) - this.activeImageBounds.height / 2)));
+
+        //             console.log('highlights: ', highlightX, highlightY);
+
+        //             imageTag.style.transform = 'translate(' + (-1 * (highlightX)) + 'px, ' + (-1 * highlightY) + 'px' + ')';
+        //             console.log('imageContainer.style.transform: ', imageTag.style.transform);
+        //         } else {
+        //             this.activeImageMobileKey++;
+        //             let imageContainer = document.getElementById('image-container' + this.activeIndex);
+        //             let imageTag = document.getElementById('image-tag' + this.activeIndex);
+
+        //             imageContainer.classList.remove('relative');
+        //             imageTag.classList.remove('absolute');
+        //             imageContainer.style.transform = 'none';
+        //             imageTag.style.transform = 'none';
+        //             // imageTag.classList.add('absolute');
+        //             imageContainer.style.width = 'unset';
+        //             imageContainer.style.height = 'unset';
+
+        //             // let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
+        //             // console.log('offsetX: ', offsetX);
+        //             // imageContainer.style.transform = 'translate(' + offsetX + 'px, 0px' + ')';
+        //             // console.log('imageContainer.style.transform: ', imageContainer.style.transform);
+                    
+
+        //             // let highlightX = (event.offsetX > (imageContainer.style.width/2)) ? (imageContainer.style.width - event.offsetX > (imageContainer.style.width/2) ? event.offsetX - (imageContainer.style.width/2) : eventOffsetX - (this.activeImageBounds.width/4)) : 0;
+        //             // let highlightY = (event.offsetY > (imageContainer.style.height/2)) ? (imageContainer.style.height - event.offsetY > (imageContainer.style.height/2) ? event.offsetY - (imageContainer.style.height/2) : eventOffsetY - (imageContainer.style.height/2)) : 0;
+            
+        //             // imageContainer.style.left = 0 + 'px';
+        //             // imageContainer.style.top = 0 + 'px';
+        //         }
+
+        //         console.log('event: ', event);
+		// 	}
+		// },
+        zoomImage(event) {
 			console.log('this.isSwiping: ', this.isSwiping);
 			if (!this.isSwiping) {
 				this.zoomInFlagMobile = !this.zoomInFlagMobile;
 
                 if (this.zoomInFlagMobile) {
-                //     this.previousZoomX = event.offsetX;
-                //     this.previousZoomY = event.offsetY;
+                    console.log('event: ', event);
+                    let imageContainer = document.getElementById('image-container' + this.activeIndex);
+                    let imageTag = document.getElementById('image-tag' + this.activeIndex);
 
-                //     this.displayZoomImage(event.offsetX, event.offsetY);
-                //     // let delay = setInterval(() => {
-                //     //     this.displayZoomImage(event.offsetX, event.offsetY);
-                //     //     clearInterval(delay);
-                //     // }, 1000);
-                // } else {
-                    let imageContainer = document.getElementById('image-container');
-                    let imageTag = document.getElementById('image-tag');
-
-                    imageTag.classList.add('absolute');
-                    // imageTag.classList.add('absolute');
+                    
                     imageContainer.style.width = this.activeImageBounds.width * 2 + 'px';
                     imageContainer.style.height = this.activeImageBounds.height * 2 + 'px';
+                    
+                    let imageContainerBounds = imageContainer.getBoundingClientRect();
 
                     let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
                     console.log('offsetX: ', offsetX);
-                    imageContainer.style.transform = 'translate(' + offsetX + 'px, 0px' + ')';
-                    console.log('imageContainer.style.transform: ', imageContainer.style.transform);
-                    
 
-                    let highlightX = (event.offsetX > (imageContainer.style.width/2)) ? (imageContainer.style.width - event.offsetX > (imageContainer.style.width/2) ? event.offsetX - (imageContainer.style.width/2) : eventOffsetX - (this.activeImageBounds.width/4)) : 0;
-                    let highlightY = (event.offsetY > (imageContainer.style.height/2)) ? (imageContainer.style.height - event.offsetY > (imageContainer.style.height/2) ? event.offsetY - (imageContainer.style.height/2) : eventOffsetY - (imageContainer.style.height/2)) : 0;
-            
-                    imageContainer.style.left = highlightX + 'px';
-                    imageContainer.style.top = highlightY + 'px';
-                    
-                //     let zoomContainer = document.getElementById('zoom-container');
+                    imageContainer.style.transform = 'translate(' + -1 * imageContainerBounds.left + 'px, ' + -1 * imageContainerBounds.top + 'px' + ')';
 
-                //     imageContainer.classList.remove('hidden');
-                //     zoomContainer.classList.add('hidden');
+                    imageContainerBounds = imageContainer.getBoundingClientRect();
+                    console.log('imagecontbound: ', imageContainerBounds);
+                    
+                    let leftOffset = (window.innerWidth - this.activeImageBounds.width) / 2;
+                    let topOffset = (window.innerHeight - this.activeImageBounds.height) / 2;
+
+                    let highlightX = (2 * (event.offsetX - leftOffset) < this.activeImageBounds.width / 2 ? 0 : ((2 * this.activeImageBounds.width - (2 * (event.offsetX - leftOffset)) < (this.activeImageBounds.width / 2)) ? ((window.innerWidth - 2 * (event.offsetX - leftOffset) > 0) ? 0 : this.activeImageBounds.width) : (2 * (event.offsetX - leftOffset) - this.activeImageBounds.width / 2)));
+
+                    let highlightY = (2 * (event.offsetY - topOffset) < this.activeImageBounds.height / 2 ? 0 : ((2 * this.activeImageBounds.height - (2 * (event.offsetY - topOffset)) < (this.activeImageBounds.height / 2)) ? ((window.innerHeight - 2 * (event.offsetY - topOffset) > 0) ? 0 : this.activeImageBounds.height) : (2 * (event.offsetY - topOffset) - this.activeImageBounds.height / 2)));
+
+                    console.log('highlights: ', highlightX, highlightY);
+
+                    imageTag.style.transform = 'translate(' + (-1 * (highlightX)) + 'px, ' + (-1 * highlightY) + 'px' + ')';
+                    console.log('imageContainer.style.transform: ', imageTag.style.transform);
                 } else {
-                    let imageContainer = document.getElementById('image-container');
-                    let imageTag = document.getElementById('image-tag');
+                    this.activeImageMobileKey++;
+                    let imageContainer = document.getElementById('image-container' + this.activeIndex);
+                    let imageTag = document.getElementById('image-tag' + this.activeIndex);
 
+                    imageContainer.classList.remove('relative');
                     imageTag.classList.remove('absolute');
-                    // imageTag.classList.add('absolute');
-                    imageContainer.style.width = this.activeImageBounds.width / 2 + 'px';
-                    imageContainer.style.height = this.activeImageBounds.height / 2 + 'px';
-
                     imageContainer.style.transform = 'none';
-                    // let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
-                    // console.log('offsetX: ', offsetX);
-                    // imageContainer.style.transform = 'translate(' + offsetX + 'px, 0px' + ')';
-                    // console.log('imageContainer.style.transform: ', imageContainer.style.transform);
-                    
-
-                    // let highlightX = (event.offsetX > (imageContainer.style.width/2)) ? (imageContainer.style.width - event.offsetX > (imageContainer.style.width/2) ? event.offsetX - (imageContainer.style.width/2) : eventOffsetX - (this.activeImageBounds.width/4)) : 0;
-                    // let highlightY = (event.offsetY > (imageContainer.style.height/2)) ? (imageContainer.style.height - event.offsetY > (imageContainer.style.height/2) ? event.offsetY - (imageContainer.style.height/2) : eventOffsetY - (imageContainer.style.height/2)) : 0;
-            
-                    // imageContainer.style.left = 0 + 'px';
-                    // imageContainer.style.top = 0 + 'px';
+                    imageTag.style.transform = 'none';
+                    imageContainer.style.width = 'unset';
+                    imageContainer.style.height = 'unset';
                 }
 
                 console.log('event: ', event);
 			}
 		},
+        zoomImageWeb(event) {
+            console.log('event web: ', event);
+            this.zoomInFlagWeb = !this.zoomInFlagWeb;
+
+            let imageContainerWeb = document.getElementById('active-image-web-container');
+            let imageTagWeb = document.getElementById('active-image-web');
+
+            if (this.zoomInFlagWeb) {
+                let offsetX = event.offsetX - event.target.offsetLeft;
+                let offsetY = event.offsetY - event.target.offsetTop;
+
+                imageTagWeb.style.transformOrigin = `${offsetX}px ${offsetY}px`;
+                imageTagWeb.style.transform = 'scale(2)';
+
+                imageContainerWeb.addEventListener('mousemove', this.onMouseMove);
+            } else {
+                imageContainerWeb.removeEventListener('mousemove', this.onMouseMove);
+                this.activeImageWebKey++;
+            }
+        },
+        onMouseMove(event) {
+            console.log('hey: ', event);
+            let imageContainerWeb = document.getElementById('active-image-web-container');
+            let imageTagWeb = document.getElementById('active-image-web');
+
+            let offsetX = event.offsetX - event.target.offsetLeft;
+            let offsetY = event.offsetY - event.target.offsetTop;
+
+            imageTagWeb.style.transformOrigin = `${offsetX}px ${offsetY}px`;
+        },
         displayZoomImage(eventOffsetX, eventOffsetY) {
-            let imageTag = document.getElementById('image-tag');
+            let imageTag = document.getElementById('image-tag' + this.activeIndex);
 
             let highlightX = (eventOffsetX > (this.activeImageBounds.width/4)) ? (this.activeImageBounds.width - eventOffsetX > (this.activeImageBounds.width/4) ? eventOffsetX - (this.activeImageBounds.width/4) : eventOffsetX - (this.activeImageBounds.width/4)) : 0;
             let highlightY = (eventOffsetY > (this.activeImageBounds.height/4)) ? (this.activeImageBounds.height - eventOffsetY > (this.activeImageBounds.height/4) ? eventOffsetY - (this.activeImageBounds.height/4) : eventOffsetY - (this.activeImageBounds.height/4)) : 0;
@@ -395,25 +470,10 @@ export default {
         },
         updateSelectedMediaMobile(index) {
             this.activeIndex = index;
-
-            // let delay = setInterval(() => {
-            //     this.activeImageBounds = document.getElementById('image-tag').getBoundingClientRect();
-            //     console.log('this.activeImageBounds: ', this.activeImageBounds);
-
-            //     clearInterval(delay);
-            // }, 1000);
         },
 		closePopup() {
 			this.$emit('closePopupEvent');
 		},
-        toggleZoomInWeb(event) {
-            console.log('event: ', event);
-            this.zoomInFlagWeb = !this.zoomInFlagWeb;
-
-            if (this.zoomInFlagWeb) {
-
-            }
-        }
 	}
 }
 </script>

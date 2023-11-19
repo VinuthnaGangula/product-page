@@ -162,7 +162,6 @@ export default {
             isSwiping: false,
             swipeStart: 0,
             swipeEnd: null,
-            zoomOnHoverFlag: false,
             loadingFlag: true,
             imageKey: 0,
 			disableButton: true
@@ -189,24 +188,24 @@ export default {
 					id: 1,
 					placement: 1,
 					type: 'IMAGE',
-					thumbnail: 'product-image-thumbnail.jpeg',
-					standard_image: 'product-image.jpeg',
+					thumbnail: 's23_2_thumbnail.jpg',
+					standard_image: 's23_2.jpg',
 					zoom_image: 'product-image-large.jpeg'
 				},
 				{
 					id: 2,
 					placement: 2,
 					type: 'IMAGE',
-					thumbnail: 'product-image-front-thumbnail.jpeg',
-					standard_image: 'product-image-front.jpeg',
+					thumbnail: 's23_3_thumbnail.jpg',
+					standard_image: 's23_3.jpg',
 					zoom_image: 'product-image-front-large.jpeg'
 				},
 				{
 					id: 3,
 					placement: 3,
 					type: 'IMAGE',
-					thumbnail: 'product-image-back-thumbnail.jpeg',
-					standard_image: 'product-image-back.jpeg',
+					thumbnail: 's23_4_thumbnail.jpg',
+					standard_image: 's23_4.jpg',
 					zoom_image: 'product-image-back-large.jpeg'
 				},
 				{
@@ -232,7 +231,6 @@ export default {
             colour: (this.productData.properties.filter((property) => property.name == 'Colour'))[0].value,
             media: this.sortProductMedia
         };
-        console.log('this.popUpViewerData: ', this.popUpViewerData);
 
         this.selectedMedium = this.sortProductMedia[0];
 
@@ -339,8 +337,4 @@ export default {
 
 <style scoped>
 @import '../css/commonStyles.css';
-
-.highlight-active-class {
-    opacity: 0.5;
-}
 </style>
