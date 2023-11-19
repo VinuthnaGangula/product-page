@@ -191,10 +191,9 @@ export default {
             if (this.product_data.media[this.activeIndex].type == 'IMAGE') {
                 let delay = setInterval(() => {
                     this.activeImageBounds = document.getElementById('image-tag' + this.activeIndex).getBoundingClientRect();
-                    console.log('this.activeImageBounds: ', this.activeImageBounds);
     
                     clearInterval(delay);
-                }, 200);
+                }, 300);
             }
         },
         activeTabIndex() {
@@ -205,7 +204,6 @@ export default {
             if (this.activeTab == 'IMAGES') {
                 let delay = setInterval(() => {
                     this.activeImageBoundsWeb = document.getElementById('active-image-web-container').getBoundingClientRect();
-                    console.log('this.activeImageBoundsWeb: ', this.activeImageBoundsWeb);
     
                     clearInterval(delay);
                 }, 200);
@@ -242,18 +240,14 @@ export default {
 		},
 		onTouchStart(event) {
             this.isSwiping = true;
-            console.log('spy: ', event);
             this.swipeStartX = event.touches[0].clientX;
             this.swipeStartY = event.touches[0].clientY;
         },
         onTouchStop() {
-			console.log('this.isSwiping: ', this.isSwiping);
             if (this.isSwiping && this.swipeEndX != null) {
                 let swipeLengthX = this.swipeStartX - this.swipeEndX;
-				console.log('swipeLenX: ', swipeLengthX, this.swipeStartX, this.swipeEndX);
 
                 let swipeLengthY = this.swipeStartY - this.swipeEndY;
-                console.log('swipeLengthY: ', swipeLengthY);
 
 
                 if (!this.zoomInFlagMobile) {
@@ -265,17 +259,14 @@ export default {
                         this.activeIndex = (this.product_data.media.length + this.activeIndex - 1) % this.product_data.media.length;
                     }
                 } else {
-                    console.log('this.isSwiping blep: ', this.isSwiping);
                     let imageContainer = document.getElementById('image-container' + this.activeIndex);
 
                     let imageTag = document.getElementById('image-tag' + this.activeIndex);
                     let imageBounds = imageTag.getBoundingClientRect();
-                    console.log('imageBounds: ', imageBounds);
                     
                     let translateX = (imageBounds.left - swipeLengthX <= 0) ? ((imageBounds.left - swipeLengthX >= (-1 * imageBounds.width / 2)) ? imageBounds.left - swipeLengthX : (-1 * imageBounds.width / 2)) : 0;
                     let translateY = (imageBounds.top - swipeLengthY <= 0) ? ((imageBounds.top - swipeLengthY >= (-1 * imageBounds.height / 2)) ? imageBounds.top - swipeLengthY : (-1 * imageBounds.height / 2)) : 0;
                     
-                    console.log('s: ', translateX, translateY);
                     imageTag.style.transform = 'translate(' + translateX + 'px, ' + translateY + 'px)';
                 }
 
@@ -286,83 +277,16 @@ export default {
 				this.swipeStartX = null;
                 this.isSwiping = false;
             }
-			console.log('this.isSwiping: ', this.isSwiping);
         },
         onTouchMove(event) {
             this.swipeEndX = event.touches[0].clientX;
             this.swipeEndY = event.touches[0].clientY;
         },
-		// zoomImage(event) {
-		// 	console.log('this.isSwiping: ', this.isSwiping);
-		// 	if (!this.isSwiping) {
-		// 		this.zoomInFlagMobile = !this.zoomInFlagMobile;
-
-        //         if (this.zoomInFlagMobile) {
-        //             console.log('event: ', event);
-        //             let imageContainer = document.getElementById('image-container' + this.activeIndex);
-        //             let imageTag = document.getElementById('image-tag' + this.activeIndex);
-
-                    
-        //             imageContainer.style.width = this.activeImageBounds.width * 2 + 'px';
-        //             imageContainer.style.height = this.activeImageBounds.height * 2 + 'px';
-                    
-        //             let imageContainerBounds = imageContainer.getBoundingClientRect();
-
-        //             let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
-        //             console.log('offsetX: ', offsetX);
-
-        //             imageContainer.style.transform = 'translate(' + -1 * imageContainerBounds.left + 'px, ' + -1 * imageContainerBounds.top + 'px' + ')';
-
-        //             imageContainerBounds = imageContainer.getBoundingClientRect();
-        //             console.log('imagecontbound: ', imageContainerBounds);
-                    
-        //             let leftOffset = (window.innerWidth - this.activeImageBounds.width) / 2;
-        //             let topOffset = (window.innerHeight - this.activeImageBounds.height) / 2;
-
-        //             let highlightX = (2 * (event.offsetX - leftOffset) < this.activeImageBounds.width / 2 ? 0 : ((2 * this.activeImageBounds.width - (2 * (event.offsetX - leftOffset)) < (this.activeImageBounds.width / 2)) ? ((window.innerWidth - 2 * (event.offsetX - leftOffset) > 0) ? 0 : this.activeImageBounds.width) : (2 * (event.offsetX - leftOffset) - this.activeImageBounds.width / 2)));
-
-        //             let highlightY = (2 * (event.offsetY - topOffset) < this.activeImageBounds.height / 2 ? 0 : ((2 * this.activeImageBounds.height - (2 * (event.offsetY - topOffset)) < (this.activeImageBounds.height / 2)) ? ((window.innerHeight - 2 * (event.offsetY - topOffset) > 0) ? 0 : this.activeImageBounds.height) : (2 * (event.offsetY - topOffset) - this.activeImageBounds.height / 2)));
-
-        //             console.log('highlights: ', highlightX, highlightY);
-
-        //             imageTag.style.transform = 'translate(' + (-1 * (highlightX)) + 'px, ' + (-1 * highlightY) + 'px' + ')';
-        //             console.log('imageContainer.style.transform: ', imageTag.style.transform);
-        //         } else {
-        //             this.activeImageMobileKey++;
-        //             let imageContainer = document.getElementById('image-container' + this.activeIndex);
-        //             let imageTag = document.getElementById('image-tag' + this.activeIndex);
-
-        //             imageContainer.classList.remove('relative');
-        //             imageTag.classList.remove('absolute');
-        //             imageContainer.style.transform = 'none';
-        //             imageTag.style.transform = 'none';
-        //             // imageTag.classList.add('absolute');
-        //             imageContainer.style.width = 'unset';
-        //             imageContainer.style.height = 'unset';
-
-        //             // let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
-        //             // console.log('offsetX: ', offsetX);
-        //             // imageContainer.style.transform = 'translate(' + offsetX + 'px, 0px' + ')';
-        //             // console.log('imageContainer.style.transform: ', imageContainer.style.transform);
-                    
-
-        //             // let highlightX = (event.offsetX > (imageContainer.style.width/2)) ? (imageContainer.style.width - event.offsetX > (imageContainer.style.width/2) ? event.offsetX - (imageContainer.style.width/2) : eventOffsetX - (this.activeImageBounds.width/4)) : 0;
-        //             // let highlightY = (event.offsetY > (imageContainer.style.height/2)) ? (imageContainer.style.height - event.offsetY > (imageContainer.style.height/2) ? event.offsetY - (imageContainer.style.height/2) : eventOffsetY - (imageContainer.style.height/2)) : 0;
-            
-        //             // imageContainer.style.left = 0 + 'px';
-        //             // imageContainer.style.top = 0 + 'px';
-        //         }
-
-        //         console.log('event: ', event);
-		// 	}
-		// },
-        zoomImage(event) {
-			console.log('this.isSwiping: ', this.isSwiping);
+		zoomImage(event) {
 			if (!this.isSwiping) {
 				this.zoomInFlagMobile = !this.zoomInFlagMobile;
 
                 if (this.zoomInFlagMobile) {
-                    console.log('event: ', event);
                     let imageContainer = document.getElementById('image-container' + this.activeIndex);
                     let imageTag = document.getElementById('image-tag' + this.activeIndex);
 
@@ -373,12 +297,10 @@ export default {
                     let imageContainerBounds = imageContainer.getBoundingClientRect();
 
                     let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
-                    console.log('offsetX: ', offsetX);
 
                     imageContainer.style.transform = 'translate(' + -1 * imageContainerBounds.left + 'px, ' + -1 * imageContainerBounds.top + 'px' + ')';
 
                     imageContainerBounds = imageContainer.getBoundingClientRect();
-                    console.log('imagecontbound: ', imageContainerBounds);
                     
                     let leftOffset = (window.innerWidth - this.activeImageBounds.width) / 2;
                     let topOffset = (window.innerHeight - this.activeImageBounds.height) / 2;
@@ -387,10 +309,8 @@ export default {
 
                     let highlightY = (2 * (event.offsetY - topOffset) < this.activeImageBounds.height / 2 ? 0 : ((2 * this.activeImageBounds.height - (2 * (event.offsetY - topOffset)) < (this.activeImageBounds.height / 2)) ? ((window.innerHeight - 2 * (event.offsetY - topOffset) > 0) ? 0 : this.activeImageBounds.height) : (2 * (event.offsetY - topOffset) - this.activeImageBounds.height / 2)));
 
-                    console.log('highlights: ', highlightX, highlightY);
 
                     imageTag.style.transform = 'translate(' + (-1 * (highlightX)) + 'px, ' + (-1 * highlightY) + 'px' + ')';
-                    console.log('imageContainer.style.transform: ', imageTag.style.transform);
                 } else {
                     this.activeImageMobileKey++;
                     let imageContainer = document.getElementById('image-container' + this.activeIndex);
@@ -403,12 +323,9 @@ export default {
                     imageContainer.style.width = 'unset';
                     imageContainer.style.height = 'unset';
                 }
-
-                console.log('event: ', event);
 			}
 		},
         zoomImageWeb(event) {
-            console.log('event web: ', event);
             this.zoomInFlagWeb = !this.zoomInFlagWeb;
 
             let imageContainerWeb = document.getElementById('active-image-web-container');
@@ -428,7 +345,6 @@ export default {
             }
         },
         onMouseMove(event) {
-            console.log('hey: ', event);
             let imageContainerWeb = document.getElementById('active-image-web-container');
             let imageTagWeb = document.getElementById('active-image-web');
 
@@ -443,27 +359,11 @@ export default {
             let highlightX = (eventOffsetX > (this.activeImageBounds.width/4)) ? (this.activeImageBounds.width - eventOffsetX > (this.activeImageBounds.width/4) ? eventOffsetX - (this.activeImageBounds.width/4) : eventOffsetX - (this.activeImageBounds.width/4)) : 0;
             let highlightY = (eventOffsetY > (this.activeImageBounds.height/4)) ? (this.activeImageBounds.height - eventOffsetY > (this.activeImageBounds.height/4) ? eventOffsetY - (this.activeImageBounds.height/4) : eventOffsetY - (this.activeImageBounds.height/4)) : 0;
             
-            console.log('highlight: ', highlightX, highlightY);
 
             imageTag.style.left = highlightX + 'px';
             imageTag.style.top = highlightY + 'px';
 
-            // let zoomContainer = document.getElementById('zoom-container');
-
-            // zoomContainer.style.width = this.activeImageBounds.width * 2 + 'px';
-            // zoomContainer.style.height = this.activeImageBounds.height * 2 + 'px';
-
-            console.log('this.activeImageBounds.width * 2: ', this.activeImageBounds.width * 2, this.activeImageBounds.height * 2);
             let imagePath = require('../assets/ProductImages/' + this.product_data.media[this.activeIndex].standard_image);
-            // zoomContainer.style.backgroundImage = `url(${imagePath})`;
-
-            // zoomContainer.style.backgroundSize = this.activeImageBounds.width * 2 + 'px ' + this.activeImageBounds.height * 2 + 'px';
-
-            // zoomContainer.style.backgroundPosition = '-' + highlightX * 2 + 'px ' + '-' + highlightY * 2 + 'px';
-            // console.log('zoomContainer.style.backgroundPosition: ', zoomContainer.style.backgroundPosition);
-
-            // imageContainer?.classList.add('hidden');
-            // zoomContainer.classList.remove('hidden');
         },
 		updateSelectedMediaWeb(index) {
             this.activeTabIndex = index;
