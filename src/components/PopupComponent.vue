@@ -39,18 +39,9 @@
                                     <div v-else class="h-full flex justify-center align-center">
                                         <!-- Display Content -->
                                         <div id="active-image-web-container" :key="activeImageWebKey" class="relative" :class="[zoomInFlagWeb ? 'cursor-zoom-out' : 'cursor-zoom-in']" @click="(event) => zoomImageWeb(event)">
-                                            <img id="active-image-web" class=""
+                                            <img id="active-image-web" class="transition-all ease duration-500" 
                                             :class="[zoomInFlagWeb ? 'h-full overflow-hidden transition ease duration-750' : 'h-full mx-auto origin-center object-contain']" :src="require('../assets/ProductImages/' + images[activeTabIndex].standard_image)" alt="product-image">
                                         </div>
-
-                                        <!-- <div :id="'image-container' + index" class="imageContainer z-100">
-                                            <img :id="'image-tag' + index"
-                                                :class="[zoomInFlagMobile ? 'scale-200 z-100 h-full' : 'scale-100 object-contain max-h-[60vh]']"
-                                                
-                                                :src="require('../assets/ProductImages/' + medium.standard_image)"
-                                                alt="product-image"
-                                            >
-                                        </div> -->
                                     </div>
                                 </div>
 
@@ -104,13 +95,9 @@
                                         </div>
                                         <div v-else class="my-auto">
                                             <div class="my-auto" @dblclick="(event) => zoomImage(event)">
-                                                <div :key="activeImageMobileKey" :id="'image-container' + index" class="imageContainer">
-                                                    <img :id="'image-tag' + index"
-                                                        class="transition-translate duration-500"
-                                                        :class="[zoomInFlagMobile ? 'scale-200 z-100 h-full' : 'scale-100 object-contain max-h-[60vh]']"
-                                                        :src="require('../assets/ProductImages/' + medium.standard_image)"
-                                                        alt="product-image"
-                                                    >
+                                                <div :id="'image-container' + index" :key="activeImageMobileKey" @click="(event) => zoomImageWeb(event)">
+                                                    <img :id="'image-tag' + index" class="transition-all ease duration-500" 
+                                                    :src="require('../assets/ProductImages/' + medium.standard_image)" alt="product-image">
                                                 </div>
                                             </div>
                                         </div>
@@ -167,6 +154,8 @@ export default {
             swipeEndX: null,
             swipeStartY: null,
             swipeEndY: null,
+            previousOriginX: null,
+            previousOriginY: null,
 			zoomInFlagWeb: false,
 			zoomInFlagMobile: false,
             currentImagePosition: null,
@@ -260,14 +249,15 @@ export default {
                     }
                 } else {
                     let imageContainer = document.getElementById('image-container' + this.activeIndex);
-
+                    let imageContainerBounds = imageContainer.getBoundingClientRect();
                     let imageTag = document.getElementById('image-tag' + this.activeIndex);
-                    let imageBounds = imageTag.getBoundingClientRect();
-                    
-                    let translateX = (imageBounds.left - swipeLengthX <= 0) ? ((imageBounds.left - swipeLengthX >= (-1 * imageBounds.width / 2)) ? imageBounds.left - swipeLengthX : (-1 * imageBounds.width / 2)) : 0;
-                    let translateY = (imageBounds.top - swipeLengthY <= 0) ? ((imageBounds.top - swipeLengthY >= (-1 * imageBounds.height / 2)) ? imageBounds.top - swipeLengthY : (-1 * imageBounds.height / 2)) : 0;
-                    
-                    imageTag.style.transform = 'translate(' + translateX + 'px, ' + translateY + 'px)';
+
+                    let offsetX = this.previousOriginX + swipeLengthX < 0 ? 0 : (this.previousOriginX + swipeLengthX > imageContainerBounds.width ? imageContainerBounds.width : this.previousOriginX + swipeLengthX);
+                    let offsetY = this.previousOriginY + swipeLengthY < 0 ? 0 : (this.previousOriginY + swipeLengthY > imageContainerBounds.height ? imageContainerBounds.height : this.previousOriginY + swipeLengthY);
+
+                    imageTag.style.transformOrigin = `${offsetX}px ${offsetY}px`;
+                    imageTag.style.transform = 'scale(2)';
+                
                 }
 
 				this.swipeStartX = null;
@@ -287,41 +277,18 @@ export default {
 				this.zoomInFlagMobile = !this.zoomInFlagMobile;
 
                 if (this.zoomInFlagMobile) {
-                    let imageContainer = document.getElementById('image-container' + this.activeIndex);
                     let imageTag = document.getElementById('image-tag' + this.activeIndex);
 
-                    
-                    imageContainer.style.width = this.activeImageBounds.width * 2 + 'px';
-                    imageContainer.style.height = this.activeImageBounds.height * 2 + 'px';
-                    
-                    let imageContainerBounds = imageContainer.getBoundingClientRect();
+                    let offsetX = event.offsetX - event.target.offsetLeft;
+                    let offsetY = event.offsetY - event.target.offsetTop;
 
-                    let offsetX = ((this.activeImageBounds.width * 2) - window.innerWidth) / 2;
+                    imageTag.style.transformOrigin = `${offsetX}px ${offsetY}px`;
+                    imageTag.style.transform = 'scale(2)';
 
-                    imageContainer.style.transform = 'translate(' + -1 * imageContainerBounds.left + 'px, ' + -1 * imageContainerBounds.top + 'px' + ')';
-
-                    imageContainerBounds = imageContainer.getBoundingClientRect();
-                    
-                    let leftOffset = (window.innerWidth - this.activeImageBounds.width) / 2;
-                    let topOffset = (window.innerHeight - this.activeImageBounds.height) / 2;
-
-                    let highlightX = (2 * (event.offsetX - leftOffset) < this.activeImageBounds.width / 2 ? 0 : ((2 * this.activeImageBounds.width - (2 * (event.offsetX - leftOffset)) < (this.activeImageBounds.width / 2)) ? ((window.innerWidth - 2 * (event.offsetX - leftOffset) > 0) ? 0 : this.activeImageBounds.width) : (2 * (event.offsetX - leftOffset) - this.activeImageBounds.width / 2)));
-
-                    let highlightY = (2 * (event.offsetY - topOffset) < this.activeImageBounds.height / 2 ? 0 : ((2 * this.activeImageBounds.height - (2 * (event.offsetY - topOffset)) < (this.activeImageBounds.height / 2)) ? ((window.innerHeight - 2 * (event.offsetY - topOffset) > 0) ? 0 : this.activeImageBounds.height) : (2 * (event.offsetY - topOffset) - this.activeImageBounds.height / 2)));
-
-
-                    imageTag.style.transform = 'translate(' + (-1 * (highlightX)) + 'px, ' + (-1 * highlightY) + 'px' + ')';
+                    this.previousOriginX = offsetX;
+                    this.previousOriginY = offsetY;
                 } else {
                     this.activeImageMobileKey++;
-                    let imageContainer = document.getElementById('image-container' + this.activeIndex);
-                    let imageTag = document.getElementById('image-tag' + this.activeIndex);
-
-                    imageContainer.classList.remove('relative');
-                    imageTag.classList.remove('absolute');
-                    imageContainer.style.transform = 'none';
-                    imageTag.style.transform = 'none';
-                    imageContainer.style.width = 'unset';
-                    imageContainer.style.height = 'unset';
                 }
 			}
 		},
@@ -345,25 +312,12 @@ export default {
             }
         },
         onMouseMove(event) {
-            let imageContainerWeb = document.getElementById('active-image-web-container');
             let imageTagWeb = document.getElementById('active-image-web');
 
             let offsetX = event.offsetX - event.target.offsetLeft;
             let offsetY = event.offsetY - event.target.offsetTop;
 
             imageTagWeb.style.transformOrigin = `${offsetX}px ${offsetY}px`;
-        },
-        displayZoomImage(eventOffsetX, eventOffsetY) {
-            let imageTag = document.getElementById('image-tag' + this.activeIndex);
-
-            let highlightX = (eventOffsetX > (this.activeImageBounds.width/4)) ? (this.activeImageBounds.width - eventOffsetX > (this.activeImageBounds.width/4) ? eventOffsetX - (this.activeImageBounds.width/4) : eventOffsetX - (this.activeImageBounds.width/4)) : 0;
-            let highlightY = (eventOffsetY > (this.activeImageBounds.height/4)) ? (this.activeImageBounds.height - eventOffsetY > (this.activeImageBounds.height/4) ? eventOffsetY - (this.activeImageBounds.height/4) : eventOffsetY - (this.activeImageBounds.height/4)) : 0;
-            
-
-            imageTag.style.left = highlightX + 'px';
-            imageTag.style.top = highlightY + 'px';
-
-            let imagePath = require('../assets/ProductImages/' + this.product_data.media[this.activeIndex].standard_image);
         },
 		updateSelectedMediaWeb(index) {
             this.activeTabIndex = index;
@@ -381,7 +335,4 @@ export default {
 <style scoped>
 @import '../css/commonStyles';
 
-#zoom-container {
-    transition: background-image 2s ease;
-}
 </style>
